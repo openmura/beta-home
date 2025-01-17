@@ -3,155 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie 管理test</title>
+    <title>Cookieの日付指定</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-        }
-
-        .page {
-            display: none; /* 初期状態で全て非表示 */
-            height: 100vh;
-            color: white;
-            text-align: center;
-        }
-
-        /* ルール確認ページ */
-        #rules-page {
-            background: rgba(0, 0, 0, 0.7);
-            display: block; /* 初期状態で表示 */
-            padding: 20px;
-            border-radius: 10px;
-        }
-
-        /* 通常ページのスタイル */
-        .content {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            position: relative;
             padding: 20px;
         }
 
-        .overlay {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-            padding: 20px;
+        .cookie-message {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .date-picker {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <main class="content">
-        <!-- ホームページ -->
-        <section id="home-page" class="page" style="background-image: url('https://via.placeholder.com/800x600/FF5733/FFFFFF');">
-            <div class="overlay">
-                <h2>HOME</h2>
-            </div>
-        </section>
+    <h1>Cookie日付指定デモ</h1>
+    <p class="cookie-message">
+        Cookieの日付を指定して、同意を記録することができます。
+    </p>
 
-        <!-- 情報ページ -->
-        <section id="info-page" class="page" style="background-image: url('https://via.placeholder.com/800x600/33A1FF/FFFFFF');">
-            <div class="overlay">
-                <h2>個人情報は一切取得していませんので、安心してご利用ください。</h2>
-                <h2>もし不安な点があれば、管理者に直接お知らせいただければ対応いたします。</h2>
-            </div>
-        </section>
-
-        <!-- ルール確認ページ -->
-        <section id="rules-page" class="page">
-            <div class="overlay">
-                <h2>利用規約とルールの確認</h2>
-                <p>当サイトを利用するにあたり、以下のルールをご確認ください。</p>
-                <ul>
-                    <li>ルール1: 適切に利用してください。</li>
-                    <li>ルール2: 他のユーザーに迷惑をかけないでください。</li>
-                </ul>
-                <label for="cookie-expiry">Cookieの有効期限を選択してください:</label>
-                <input type="date" id="cookie-expiry" min="2025-01-17">
-                <button id="agree-button">同意する</button>
-            </div>
-        </section>
-    </main>
+    <!-- 日付選択フォーム -->
+    <label for="expiry-date">Cookieの有効期限を選択:</label>
+    <input type="date" id="expiry-date" class="date-picker" min="2025-01-17">
+    <button id="set-cookie">Cookieを設定</button>
 
     <script>
         // Cookieを設定する関数
-        function setCookie(name, value, days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // 日数をミリ秒に変換
+        function setCookie(name, value, expiryDate) {
+            const date = new Date(expiryDate); // 選択された日付をDateオブジェクトに変換
             const expires = "expires=" + date.toUTCString();
-            document.cookie = `${name}=${value};${expires};path=/`; // Cookieを設定
+            document.cookie = `${name}=${value}; ${expires}; path=/https://openmura.github.io/beta-home`; // Cookieを設定
+            alert("Cookieが設定されました！有効期限：" + date.toUTCString());
         }
 
-        // Cookieを取得する関数
-        function getCookie(name) {
-            const nameEQ = name + "=";
-            const ca = document.cookie.split(';');
-            for (let i = 0; i < ca.length; i++) {
-                let c = ca[i].trim();
-                if (c.indexOf(nameEQ) == 0) {
-                    return c.substring(nameEQ.length, c.length);
-                }
+        // ボタンがクリックされたときの処理
+        document.getElementById("set-cookie").addEventListener("click", function() {
+            const expiryDate = document.getElementById("expiry-date").value; // ユーザーが選んだ日付
+            if (!expiryDate) {
+                alert("日付を選択してください！");
+                return;
             }
-            return "";
-        }
-
-        // Cookieの存在をチェックする関数
-        function checkCookie() {
-            const userAgreed = getCookie("userAgreed");
-            return userAgreed ? true : false;
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const homePage = document.getElementById("home-page");
-            const infoPage = document.getElementById("info-page");
-            const rulesPage = document.getElementById("rules-page");
-            const agreeButton = document.getElementById("agree-button");
-            const expiryInput = document.getElementById("cookie-expiry");
-
-            // Cookieがない場合、ルール確認ページを表示
-            if (!checkCookie()) {
-                homePage.style.display = 'none';
-                infoPage.style.display = 'none';
-                rulesPage.style.display = 'block';
-            } else {
-                homePage.style.display = 'block';
-                infoPage.style.display = 'block';
-                rulesPage.style.display = 'none';
-            }
-
-            // 同意ボタンのクリック処理
-            agreeButton.addEventListener("click", () => {
-                const selectedDate = expiryInput.value;
-                if (!selectedDate) {
-                    alert("有効期限の日付を選択してください。");
-                    return;
-                }
-
-                // 有効期限を日数に変換
-                const expiryDate = new Date(selectedDate);
-                const currentDate = new Date();
-                const diffDays = Math.ceil((expiryDate - currentDate) / (1000 * 3600 * 24)); // 日数差を計算
-
-                // Cookieを保存（有効期限を指定）
-                setCookie("userAgreed", "true", diffDays);
-
-                // ルール確認ページを非表示にして、通常ページを表示
-                rulesPage.style.display = 'none';
-                homePage.style.display = 'block';
-                infoPage.style.display = 'block';
-            });
+            setCookie("userConsent", "accepted", expiryDate); // "userConsent"という名前でCookieを設定
         });
     </script>
 
