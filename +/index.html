@@ -49,9 +49,25 @@
             text-align: center;
             padding: 20px;
         }
+
+        /* メッセージ通知のスタイル */
+        #notification {
+            background-color: rgba(0, 255, 0, 0.8);
+            color: white;
+            padding: 10px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none; /* 初期は非表示 */
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
+
+    <!-- 通知メッセージ -->
+    <div id="notification">Cookieが設定されました！</div>
 
     <main class="content">
         <!-- ホームページ -->
@@ -113,6 +129,16 @@
             return userAgreed ? true : false;
         }
 
+        // 通知を表示する関数
+        function showNotification(message) {
+            const notification = document.getElementById("notification");
+            notification.textContent = message;
+            notification.style.display = "block";
+            setTimeout(() => {
+                notification.style.display = "none";
+            }, 3000); // 3秒後に非表示
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             const homePage = document.getElementById("home-page");
             const infoPage = document.getElementById("info-page");
@@ -151,6 +177,9 @@
                 rulesPage.style.display = 'none';
                 homePage.style.display = 'block';
                 infoPage.style.display = 'block';
+
+                // Cookie設定の通知を表示
+                showNotification("Cookieが設定されました！");
             });
         });
     </script>
