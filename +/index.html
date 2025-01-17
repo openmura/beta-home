@@ -107,7 +107,8 @@
             const date = new Date();
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000)); // 日数をミリ秒に変換
             const expires = "expires=" + date.toUTCString();
-            document.cookie = `${name}=${value};${expires};path=/https://openmura.github.io/beta-home`; // Cookieを設定
+            // SameSite属性を追加してセキュリティを確保
+            document.cookie = `${name}=${value};${expires};path=/;SameSite=Lax`;
         }
 
         // Cookieを取得する関数
@@ -173,13 +174,13 @@
                 // Cookieを保存（有効期限を指定）
                 setCookie("userAgreed", "true", diffDays);
 
+                // Cookie設定成功メッセージ
+                showNotification("Cookieが設定されました！");
+
                 // ルール確認ページを非表示にして、通常ページを表示
                 rulesPage.style.display = 'none';
                 homePage.style.display = 'block';
                 infoPage.style.display = 'block';
-
-                // Cookie設定の通知を表示
-                showNotification("Cookieが設定されました！");
             });
         });
     </script>
